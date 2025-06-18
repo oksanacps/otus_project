@@ -1,4 +1,6 @@
 from db_steps import db_steps
+
+
 def validate_owner_data(owner_id, response, expected_data):
     """
     Проверяет, что данные владельца в ответе соответствуют ожидаемым
@@ -22,6 +24,34 @@ def validate_owner_data(owner_id, response, expected_data):
 
     for field in ['firstName', 'lastName', 'address', 'city', 'telephone']:
         if owner_in_response.get(field) != expected_data.get(field):
+            return False
+
+    return True
+
+
+def validate_pet_data(pet_id, response, expected_data):
+    """
+    Проверяет, что данные владельца в ответе соответствуют ожидаемым
+
+    :param pet_id: ID питомца для проверки
+    :param response: Ответ API (список питомцев)
+    :param expected_data: Ожидаемые данные питомца
+    :return: True если данные соответствуют, False если нет
+    """
+
+    if type(response) is list:
+        pet_in_response = next(
+            (pet for pet in response if pet['id'] == pet_id),
+            None
+        )
+
+        if not pet_in_response:
+            return False
+    else:
+        pet_in_response = response
+
+    for field in ['name', 'birthDate', 'type']:
+        if pet_in_response.get(field) != expected_data.get(field):
             return False
 
     return True

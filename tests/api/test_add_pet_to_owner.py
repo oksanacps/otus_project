@@ -6,7 +6,7 @@ import allure
 from helpers import helpers
 
 
-@pytest.mark.owner
+@pytest.mark.smoke
 class TestAddPetToOwner:
     """
 

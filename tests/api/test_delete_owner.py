@@ -4,7 +4,7 @@ import allure
 from helpers import helpers
 
 
-@pytest.mark.owner
+@pytest.mark.smoke
 class TestDeleteOwner:
     """
 
@@ -23,12 +23,12 @@ class TestDeleteOwner:
 
     @allure.title("Удаление владельца с привязанными питомцами")
     def test_delete_owner_with_pets(self, get_request_instance, create_owner_with_pets, cleanup_owner, db_client):
-        owner_id, owner_data = create_owner_with_pets
+        pet_id, owner_id, owner_data, data_new_pet = create_owner_with_pets
         request = get_request_instance
         response = request.delete(endpoint='api/owners', endpoint_id=owner_id)
 
         cleanup_owner(owner_id)
 
-        assert response.status_code == 404
+        assert response.status_code == 204
 
 

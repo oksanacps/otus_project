@@ -1,18 +1,18 @@
 from src.database.my_sql.db_client import MySqlDbClient
 
 
-def create_owner(db_client: MySqlDbClient, customer_data: dict):
+def create_owner(db_client: MySqlDbClient, owner_data: dict):
     """
     Создает владельца в БД.
-    Возвращает id созданного клиента.
+    Возвращает id созданного владельца.
     """
 
     params = (
-        customer_data.get("firstName"),
-        customer_data.get("lastName"),
-        customer_data.get("address"),
-        customer_data.get("city"),
-        customer_data.get("telephone"),
+        owner_data.get("firstName"),
+        owner_data.get("lastName"),
+        owner_data.get("address"),
+        owner_data.get("city"),
+        owner_data.get("telephone"),
     )
 
     sql_request = """
@@ -34,13 +34,13 @@ def create_owner(db_client: MySqlDbClient, customer_data: dict):
         raise AssertionError(f"Ошибка создания владельца")
     
 
-def delete_owner(db_client: MySqlDbClient, id: int):
+def delete_owner(db_client: MySqlDbClient, owner_id: int):
     """
     Удаляет владельца питомца по ID.
     Возвращает True (БД кол-во затронутых строк не возвращает??)
     """
     params = (
-        id,
+        owner_id,
     )
 
     sql_request = """
@@ -54,15 +54,15 @@ def delete_owner(db_client: MySqlDbClient, id: int):
         return True
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка удаления владельца{id}: {e}")
+        raise ArithmeticError(f"Ошибка удаления владельца {owner_id}: {e}")
 
 
-def get_owner_by_id(db_client: MySqlDbClient, id: int):
+def get_owner_by_id(db_client: MySqlDbClient, owner_id: int):
     """
     Получает владельца питомца по ID.
     """
     params = (
-        id,
+        owner_id,
     )
 
     sql_request = """
@@ -76,15 +76,15 @@ def get_owner_by_id(db_client: MySqlDbClient, id: int):
         return result
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения владельца{id}: {e}")
+        raise ArithmeticError(f"Ошибка получения владельца {owner_id}: {e}")
 
 
-def get_pet_by_id(db_client: MySqlDbClient, id: int):
+def get_pet_by_id(db_client: MySqlDbClient, pet_id: int):
     """
     Получает питомца по ID.
     """
     params = (
-        id,
+        pet_id,
     )
 
     sql_request = """
@@ -98,7 +98,29 @@ def get_pet_by_id(db_client: MySqlDbClient, id: int):
         return result
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения питомца{id}: {e}")
+        raise ArithmeticError(f"Ошибка получения питомца {pet_id}: {e}")
+
+
+def get_all_pets_by_owner_id(db_client: MySqlDbClient, owner_id: int):
+    """
+    Получает всех питомцев по ID владельца.
+    """
+    params = (
+        owner_id,
+    )
+
+    sql_request = """
+        SELECT *
+        FROM pets
+        WHERE owner_id = %s;
+        """
+
+    try:
+        result = db_client.execute(sql_request, params)
+        return result
+
+    except Exception as e:
+        raise ArithmeticError(f"Ошибка получения питомцев по владельцу {owner_id}: {e}")
 
 
 def delete_all_pets_by_owner_id(db_client: MySqlDbClient, owner_id: int):
@@ -120,7 +142,29 @@ def delete_all_pets_by_owner_id(db_client: MySqlDbClient, owner_id: int):
         return True
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения питомца{owner_id}: {e}")
+        raise ArithmeticError(f"Ошибка получения питомца {owner_id}: {e}")
+
+
+def delete_all_visits_by_pet_id(db_client: MySqlDbClient, pet_id: int):
+    """
+    Удаляет все виситы в клиенику по ID питомца.
+    """
+    params = (
+        pet_id,
+    )
+
+    sql_request = """
+        DELETE
+        FROM visits
+        WHERE pet_id = %s;
+        """
+
+    try:
+        db_client.execute(sql_request, params)
+        return True
+
+    except Exception as e:
+        raise ArithmeticError(f"Ошибка получения визита {pet_id}: {e}")
 
 
 def get_pet_types(db_client: MySqlDbClient):

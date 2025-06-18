@@ -5,7 +5,7 @@ import jsonschema
 from helpers import helpers, schems
 
 
-@pytest.mark.owner
+@pytest.mark.smoke
 class TestGetOwner:
     """
 

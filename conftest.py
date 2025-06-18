@@ -3,12 +3,15 @@ import random
 import re
 import pytest
 import logging
+import allure
 
 from faker import Faker
 
 from helpers import helpers
 from src.database.my_sql.db_client import MySqlDbClient
 from db_steps import db_steps
+from src.http_client.base_request import BaseRequest
+from test_data.url_data import BASE_URL_PETCLINIC
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -39,15 +42,26 @@ def db_client(request):
     db_client.close()
 
 
+@pytest.fixture(scope='module')
+@allure.step("Получение base_url, прокидывание заголовков")
+def get_request_instance():
+    headers = {'Content-Type': 'application/json',
+               'accept': 'application/json'}
+    request = BaseRequest(BASE_URL_PETCLINIC, headers)
+    return request
+
+
 @pytest.fixture()
+@allure.step("Создание владельца питомца")
 def create_owner(db_client, generate_owner_data):
     owner_data = generate_owner_data
-    id = db_steps.create_owner(db_client, owner_data)
+    owner_id = db_steps.create_owner(db_client, owner_data)
 
-    return id, owner_data
+    return owner_id, owner_data
 
 
 @pytest.fixture()
+@allure.step("Создание владельца с питомцем")
 def create_owner_with_pets(get_request_instance, db_client, generate_owner_data, create_owner, generate_pet_data):
     request = get_request_instance
     owner_id, owner_data = create_owner
@@ -58,10 +72,27 @@ def create_owner_with_pets(get_request_instance, db_client, generate_owner_data,
 
     assert pet_data.get('owner_id') == owner_id
 
-    return owner_id, owner_data
+    return pet_id, owner_id, owner_data, data_new_pet
 
 
 @pytest.fixture()
+@allure.step("Создание владельца с питомцем и визитом в клинику")
+def create_owner_with_pets_visit(get_request_instance, db_client, generate_owner_data, create_owner_with_pets):
+    request = get_request_instance
+    pet_id, owner_id, owner_data, data_new_pet = create_owner_with_pets
+    body = {
+        "date": "2013-01-01",
+        "description": "rabies shot"
+    }
+    response = request.post(endpoint=f'api/owners/{owner_id}/pets/{pet_id}/visits', body=json.dumps(body))
+
+    assert response.get('petId') == pet_id
+
+    return pet_id, owner_id
+
+
+@pytest.fixture()
+@allure.step("Очищение БД")
 def cleanup_owner(request, db_client):
     """
     Фикстура для удаления владельцев питомцев после теста.
@@ -69,19 +100,23 @@ def cleanup_owner(request, db_client):
     owner_to_cleanup = []
 
     def cleanup_owners():
-        for _id in owner_to_cleanup:
-            db_steps.delete_all_pets_by_owner_id(db_client, _id)
-            db_steps.delete_owner(db_client, _id)
+        for owner_id in owner_to_cleanup:
+            pets = db_steps.get_all_pets_by_owner_id(db_client, owner_id)
+            for pet in pets:
+                db_steps.delete_all_visits_by_pet_id(db_client, pet.get('id'))
+            db_steps.delete_all_pets_by_owner_id(db_client, owner_id)
+            db_steps.delete_owner(db_client, owner_id)
 
     request.addfinalizer(cleanup_owners)
 
-    def add_owner_for_cleanup(_id):
-        owner_to_cleanup.append(_id)
+    def add_owner_for_cleanup(owner_id):
+        owner_to_cleanup.append(owner_id)
 
     return add_owner_for_cleanup
 
 
 @pytest.fixture()
+@allure.step("Генерация данных будущего владельца")
 def generate_owner_data():
     """
     Фикстура для генерации случайных данных владельца питомца с помощью Faker.
@@ -113,6 +148,7 @@ def generate_owner_data():
 
 
 @pytest.fixture()
+@allure.step("Генерация данных будущего питомца")
 def generate_pet_data(db_client):
     """
     Фикстура для генерации случайных данных питомца с помощью Faker.

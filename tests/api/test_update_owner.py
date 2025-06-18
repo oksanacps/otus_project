@@ -5,7 +5,7 @@ import pytest
 from helpers import helpers
 
 
-@pytest.mark.owner
+@pytest.mark.smoke
 class TestUpdateOwner:
     """
 
@@ -28,7 +28,7 @@ class TestUpdateOwner:
     @allure.title("Обновление инфомрации владельца питомцев с привязанными питомцами")
     def test_update_owner_with_pets(self, get_request_instance, create_owner_with_pets, cleanup_owner, db_client,
                                     generate_owner_data):
-        owner_id, owner_data = create_owner_with_pets
+        pet_id, owner_id, owner_data, data_new_pet = create_owner_with_pets
         owner_data_for_update = json.dumps(generate_owner_data)
         request = get_request_instance
         response = request.put(endpoint='api/owners', body=owner_data_for_update, endpoint_id=owner_id)
