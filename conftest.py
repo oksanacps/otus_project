@@ -1,9 +1,12 @@
+import json
 import random
 import re
 import pytest
 import logging
 
 from faker import Faker
+
+from helpers import helpers
 from src.database.my_sql.db_client import MySqlDbClient
 from db_steps import db_steps
 
@@ -42,6 +45,20 @@ def create_owner(db_client, generate_owner_data):
     id = db_steps.create_owner(db_client, owner_data)
 
     return id, owner_data
+
+
+@pytest.fixture()
+def create_owner_with_pets(get_request_instance, db_client, generate_owner_data, create_owner, generate_pet_data):
+    request = get_request_instance
+    owner_id, owner_data = create_owner
+    data_new_pet = generate_pet_data
+    response = request.post(endpoint=f'api/owners/{owner_id}/pets', body=json.dumps(data_new_pet))
+    pet_id = response.get('id')
+    pet_data = helpers.get_pet_in_db(db_client, pet_id)
+
+    assert pet_data.get('owner_id') == owner_id
+
+    return owner_id, owner_data
 
 
 @pytest.fixture()

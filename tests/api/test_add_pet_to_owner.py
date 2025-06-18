@@ -12,7 +12,6 @@ class TestAddPetToOwner:
 
     """
 
-    @pytest.mark.test
     @allure.title("Добавление питомца владельцу")
     def test_add_pet_to_owner(self, get_request_instance, create_owner, cleanup_owner, db_client, generate_pet_data):
         owner_id, owner_data = create_owner

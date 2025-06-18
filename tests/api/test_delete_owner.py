@@ -10,17 +10,25 @@ class TestDeleteOwner:
 
     """
 
-    @allure.title("Удаление владельца питомцев по id")
+    @allure.title("Удаление владельца питомцев по id без привязанных питомцев")
     def test_delete_owner_by_id(self, get_request_instance, create_owner, cleanup_owner, db_client):
         owner_id, owner_data = create_owner
         request = get_request_instance
-        request.delete(endpoint='api/owners', endpoint_id=owner_id)
+        response = request.delete(endpoint='api/owners', endpoint_id=owner_id)
 
         cleanup_owner(owner_id)
 
+        assert response.status_code == 204
         assert helpers.get_owner_in_db(db_client, owner_id) is None
 
+    @allure.title("Удаление владельца с привязанными питомцами")
+    def test_delete_owner_with_pets(self, get_request_instance, create_owner_with_pets, cleanup_owner, db_client):
+        owner_id, owner_data = create_owner_with_pets
+        request = get_request_instance
+        response = request.delete(endpoint='api/owners', endpoint_id=owner_id)
 
-    #TODO: Удалить несуществующего, Попытка удаления владельца, у которого есть привязанные питомцы
+        cleanup_owner(owner_id)
+
+        assert response.status_code == 404
 
 

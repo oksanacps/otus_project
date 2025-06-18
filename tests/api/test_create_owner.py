@@ -23,6 +23,7 @@ class TestCreateOwner:
 
         assert helpers.validate_owner_data(owner_id, response, generate_owner_data)
 
+    @allure.title("Создание владельца без обязательных параметров в теле запроса")
     @pytest.mark.parametrize("field", ["firstName", "lastName", "telephone"])
     def test_create_owner_missing_required_field(self, get_request_instance, generate_owner_data, field, cleanup_owner):
         request = get_request_instance
@@ -41,6 +42,7 @@ class TestCreateOwner:
 
         assert response.status_code == 400
 
+    @allure.title("Проверка ошибки при превышении максимальной длины полей в запросе создания владельца")
     @pytest.mark.parametrize("field, value, expected_status", [
         ("firstName", "A" * 31, 400),
         ("lastName", "A" * 31, 400),

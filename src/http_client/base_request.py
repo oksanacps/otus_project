@@ -56,8 +56,7 @@ class BaseRequest:
         else:
             url = f'{self.base_url}/{endpoint}/{endpoint_id}'
         response = self._request(url, 'DELETE')
-        assert response.status_code == 200 or response.status_code == 204
-        return response.json()
+        return response
 
     def put(self, endpoint, body, endpoint_id=None):
         if endpoint_id is None:
@@ -65,5 +64,4 @@ class BaseRequest:
         else:
             url = f'{self.base_url}/{endpoint}/{endpoint_id}'
         response = self._request(url, 'PUT', data=body)
-        assert response.status_code == 200 or response.status_code == 204
-        return response.json()
+        return response
