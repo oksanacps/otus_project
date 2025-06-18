@@ -8,9 +8,9 @@ import allure
 from faker import Faker
 
 from helpers import helpers
-from src.database.my_sql.db_client import MySqlDbClient
+from clients.database.my_sql.db_client import MySqlDbClient
 from db_steps import db_steps
-from src.http_client.base_request import BaseRequest
+from clients.http_client.base_request import BaseRequest
 from test_data.url_data import BASE_URL_PETCLINIC
 
 logging.basicConfig(

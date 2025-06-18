@@ -13,8 +13,7 @@ def validate_owner_data(owner_id, response, expected_data):
 
     if type(response) is list:
         owner_in_response = next(
-            (owner for owner in response if owner['id'] == owner_id),
-            None
+            (owner for owner in response if owner["id"] == owner_id), None
         )
 
         if not owner_in_response:
@@ -22,7 +21,7 @@ def validate_owner_data(owner_id, response, expected_data):
     else:
         owner_in_response = response
 
-    for field in ['firstName', 'lastName', 'address', 'city', 'telephone']:
+    for field in ["firstName", "lastName", "address", "city", "telephone"]:
         if owner_in_response.get(field) != expected_data.get(field):
             return False
 
@@ -40,17 +39,14 @@ def validate_pet_data(pet_id, response, expected_data):
     """
 
     if type(response) is list:
-        pet_in_response = next(
-            (pet for pet in response if pet['id'] == pet_id),
-            None
-        )
+        pet_in_response = next((pet for pet in response if pet["id"] == pet_id), None)
 
         if not pet_in_response:
             return False
     else:
         pet_in_response = response
 
-    for field in ['name', 'birthDate', 'type']:
+    for field in ["name", "birthDate", "type"]:
         if pet_in_response.get(field) != expected_data.get(field):
             return False
 
@@ -61,11 +57,11 @@ def get_owner_in_db(db_client, owner_id):
     result = db_steps.get_owner_by_id(db_client, owner_id)
     if result:
         return {
-            "firstName": result[0]['first_name'],
-            "lastName": result[0]['last_name'],
-            "address": result[0]['address'],
-            "city": result[0]['city'],
-            "telephone": result[0]['telephone']
+            "firstName": result[0]["first_name"],
+            "lastName": result[0]["last_name"],
+            "address": result[0]["address"],
+            "city": result[0]["city"],
+            "telephone": result[0]["telephone"],
         }
     return None
 

@@ -1,1 +1,1 @@
-BASE_URL_PETCLINIC = 'http://localhost:9966/petclinic'
+BASE_URL_PETCLINIC = "http://localhost:9966/petclinic"

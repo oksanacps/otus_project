@@ -21,10 +21,10 @@ schema_get_owners = {
                             "type": "object",
                             "properties": {
                                 "name": {"type": "string"},
-                                "id": {"type": "integer"}
+                                "id": {"type": "integer"},
                             },
                             "required": ["name", "id"],
-                            "additionalProperties": False
+                            "additionalProperties": False,
                         },
                         "id": {"type": "integer"},
                         "ownerId": {"type": "integer"},
@@ -36,19 +36,34 @@ schema_get_owners = {
                                     "date": {"type": "string", "format": "date"},
                                     "description": {"type": "string"},
                                     "id": {"type": "integer"},
-                                    "petId": {"type": "integer"}
+                                    "petId": {"type": "integer"},
                                 },
                                 "required": ["date", "description", "id", "petId"],
-                                "additionalProperties": False
-                            }
-                        }
+                                "additionalProperties": False,
+                            },
+                        },
                     },
-                    "required": ["name", "birthDate", "type", "id", "ownerId", "visits"],
-                    "additionalProperties": False
-                }
-            }
+                    "required": [
+                        "name",
+                        "birthDate",
+                        "type",
+                        "id",
+                        "ownerId",
+                        "visits",
+                    ],
+                    "additionalProperties": False,
+                },
+            },
         },
-        "required": ["firstName", "lastName", "address", "city", "telephone", "id", "pets"],
-        "additionalProperties": False
-    }
+        "required": [
+            "firstName",
+            "lastName",
+            "address",
+            "city",
+            "telephone",
+            "id",
+            "pets",
+        ],
+        "additionalProperties": False,
+    },
 }

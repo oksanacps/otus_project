@@ -6,11 +6,7 @@ import pymysql.cursors
 class MySqlDbClient:
     def __init__(self, host: str, port: int, user: str, password: str, db: str):
         self.connection = pymysql.connect(
-            host=host,
-            port=port,
-            user=user,
-            db=db,
-            password=password
+            host=host, port=port, user=user, db=db, password=password
         )
 
     def execute(self, sql_request: str, params: tuple = None):
