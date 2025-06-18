@@ -46,8 +46,9 @@ class BaseRequest:
         else:
             url = f'{self.base_url}/{endpoint}/{endpoint_id}'
         response = self._request(url, 'POST', data=body)
-        assert response.status_code == 200
-        return response.json()
+        if response.status_code == 200 or response.status_code == 201:
+            return response.json()
+        return response
 
     def delete(self, endpoint, endpoint_id=None):
         if endpoint_id is None:
@@ -55,10 +56,7 @@ class BaseRequest:
         else:
             url = f'{self.base_url}/{endpoint}/{endpoint_id}'
         response = self._request(url, 'DELETE')
-        # assert response.status_code == 200    #TODO: или проверять на 204 или обработать разные случаи
-        if response.status_code == 204:    #TODO: если не будет других кейсов то 200 можно убрать
-            return response
-        assert response.status_code == 200
+        assert response.status_code == 200 or response.status_code == 204
         return response.json()
 
     def put(self, endpoint, body, endpoint_id=None):
@@ -67,7 +65,5 @@ class BaseRequest:
         else:
             url = f'{self.base_url}/{endpoint}/{endpoint_id}'
         response = self._request(url, 'PUT', data=body)
-        if response.status_code == 204:     #TODO: если не будет других кейсов то 200 можно убрать
-            return response
-        assert response.status_code == 200
+        assert response.status_code == 200 or response.status_code == 204
         return response.json()

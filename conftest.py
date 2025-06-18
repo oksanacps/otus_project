@@ -1,9 +1,9 @@
-import json
-
-from faker import Faker
+import random
+import re
 import pytest
 import logging
 
+from faker import Faker
 from src.database.my_sql.db_client import MySqlDbClient
 from db_steps import db_steps
 
@@ -53,6 +53,7 @@ def cleanup_owner(request, db_client):
 
     def cleanup_owners():
         for _id in owner_to_cleanup:
+            db_steps.delete_all_pets_by_owner_id(db_client, _id)
             db_steps.delete_owner(db_client, _id)
 
     request.addfinalizer(cleanup_owners)
@@ -79,9 +80,10 @@ def generate_owner_data():
 
     firstname = fake.first_name()[:30]
     lastname = fake.last_name()[:30]
-    address = fake.address()[:255]
+    address = fake.address().replace("\n", " ")[:255]
     city = fake.city()[:80]
-    telephone = fake.phone_number()[:10]
+    telephone = re.sub(r"[^0-9]", "", fake.phone_number())[:10]
+    telephone = telephone.ljust(10, "0")  # Если цифр меньше 10, дополняем нулями
 
     owner_data = {
         "firstName": firstname,
@@ -94,11 +96,30 @@ def generate_owner_data():
 
 
 @pytest.fixture()
-def prepare_owner_data_for_update():
+def generate_pet_data(db_client):
     """
-    Фикстура для подготовки данных владельца питомца.
-    Возвращает json с данными владельца.
+    Фикстура для генерации случайных данных питомца с помощью Faker.
+    Возвращает словарь с данными питомца, обрезанными до длины, допустимой в БД:
+    - name: varchar(30)
+    - birthDate: date
+    и одним из типов существующих в БД
     """
 
-    owner_data = {"firstName": "Amber", "lastName": "Franklin", "address": "110", "city": "Madison", "telephone": "6085551023"}
-    return json.dumps(owner_data)
+    fake = Faker()
+
+    name = fake.first_name()[:30]
+    birthDate = fake.date_of_birth().strftime('%Y-%m-%d')
+
+    pet_types = db_steps.get_pet_types(db_client)
+    random_type = random.choice(pet_types)
+
+    pet_data = {
+        "name": name,
+        "birthDate": birthDate,
+        "type": {
+            "name": random_type.get('name'),
+            "id": random_type.get('id')
+        }
+    }
+    return pet_data
+

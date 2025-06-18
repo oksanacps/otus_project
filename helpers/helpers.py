@@ -38,3 +38,10 @@ def get_owner_in_db(db_client, owner_id):
             "telephone": result[0]['telephone']
         }
     return None
+
+
+def get_pet_in_db(db_client, pet_id):
+    result = db_steps.get_pet_by_id(db_client, pet_id)
+    if result:
+        return result[0]
+    return None
