@@ -1,3 +1,5 @@
+import json
+
 from faker import Faker
 import pytest
 import logging
@@ -65,15 +67,21 @@ def cleanup_owner(request, db_client):
 def generate_owner_data():
     """
     Фикстура для генерации случайных данных владельца питомца с помощью Faker.
-    Возвращает словарь с данными владельца.
+    Возвращает словарь с данными владельца, обрезанными до длины, допустимой в БД:
+    - firstName: varchar(30)
+    - lastName: varchar(30)
+    - address: varchar(255)
+    - city: varchar(80)
+    - telephone: varchar(10)
     """
+
     fake = Faker()
 
-    firstname = fake.first_name()
-    lastname = fake.last_name()
-    address = fake.address()
-    city = fake.city()
-    telephone = fake.phone_number()
+    firstname = fake.first_name()[:30]
+    lastname = fake.last_name()[:30]
+    address = fake.address()[:255]
+    city = fake.city()[:80]
+    telephone = fake.phone_number()[:10]
 
     owner_data = {
         "firstName": firstname,
@@ -83,3 +91,14 @@ def generate_owner_data():
         "telephone": telephone
     }
     return owner_data
+
+
+@pytest.fixture()
+def prepare_owner_data_for_update():
+    """
+    Фикстура для подготовки данных владельца питомца.
+    Возвращает json с данными владельца.
+    """
+
+    owner_data = {"firstName": "Amber", "lastName": "Franklin", "address": "110", "city": "Madison", "telephone": "6085551023"}
+    return json.dumps(owner_data)

@@ -6,7 +6,7 @@ from helpers import helpers, schems
 
 
 @pytest.mark.owner
-class TestGetOwners:
+class TestGetOwner:
     """
 
     """
@@ -22,7 +22,7 @@ class TestGetOwners:
         assert helpers.validate_owner_data(owner_id, response, owner_data)
         jsonschema.validate(instance=response, schema=schems.schema_get_owners)
 
-    @allure.title("Получение списка владельцев питомцев")
+    @allure.title("Получение владельца питомцев по id")
     def test_get_pet_owner_by_id(self, get_request_instance, create_owner, cleanup_owner):
         owner_id, owner_data = create_owner
         request = get_request_instance

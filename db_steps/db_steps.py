@@ -26,9 +26,9 @@ def create_owner(db_client: MySqlDbClient, customer_data: dict):
 
     try:
         db_client.execute(sql_request, params)
-        sql_select = "SELECT LAST_INSERT_ID();"
+        sql_select = "SELECT LAST_INSERT_ID() as id;"
         result = db_client.execute(sql_select)
-        return result[0][0]
+        return result[0].get('id')
 
     except Exception:
         raise AssertionError(f"Ошибка создания владельца")
@@ -40,7 +40,7 @@ def delete_owner(db_client: MySqlDbClient, id: int):
     Возвращает True (БД кол-во затронутых строк не возвращает??)
     """
     params = (
-        id
+        id,
     )
 
     sql_request = """
@@ -55,3 +55,25 @@ def delete_owner(db_client: MySqlDbClient, id: int):
 
     except Exception as e:
         raise ArithmeticError(f"Ошибка удаления владельца{id}: {e}")
+
+
+def get_owner_by_id(db_client: MySqlDbClient, id: int):
+    """
+    Получает владельца питомца по ID.
+    """
+    params = (
+        id,
+    )
+
+    sql_request = """
+        SELECT *
+        FROM owners
+        WHERE id = %s;
+        """
+
+    try:
+        result = db_client.execute(sql_request, params)
+        return result
+
+    except Exception as e:
+        raise ArithmeticError(f"Ошибка получения владельца{id}: {e}")

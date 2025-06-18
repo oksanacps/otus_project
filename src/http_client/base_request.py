@@ -8,15 +8,15 @@ class BaseRequest:
 
     def _request(self, url, request_type, data=None, params=None):
         if request_type == 'GET':
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, headers=self.headers)
         elif request_type == 'POST':
-            response = requests.post(url, data=data)
+            response = requests.post(url, data=data, headers=self.headers)
         elif request_type == 'DELETE':
-            response = requests.delete(url)
+            response = requests.delete(url, headers=self.headers)
         elif request_type == 'PUT':
-            response = requests.put(url, data=data)
+            response = requests.put(url, data=data, headers=self.headers)
         else:
-            response = requests.delete(url)
+            response = requests.delete(url, headers=self.headers)
 
         # log part
         print('*************')
@@ -25,7 +25,7 @@ class BaseRequest:
         print(response.status_code)
         print(response.reason)
         print(response.text)
-        print(response.json())
+        # print(response.json())
         print('*************')
         return response
 
@@ -55,6 +55,9 @@ class BaseRequest:
         else:
             url = f'{self.base_url}/{endpoint}/{endpoint_id}'
         response = self._request(url, 'DELETE')
+        # assert response.status_code == 200    #TODO: или проверять на 204 или обработать разные случаи
+        if response.status_code == 204:    #TODO: если не будет других кейсов то 200 можно убрать
+            return response
         assert response.status_code == 200
         return response.json()
 
@@ -64,5 +67,7 @@ class BaseRequest:
         else:
             url = f'{self.base_url}/{endpoint}/{endpoint_id}'
         response = self._request(url, 'PUT', data=body)
+        if response.status_code == 204:     #TODO: если не будет других кейсов то 200 можно убрать
+            return response
         assert response.status_code == 200
         return response.json()

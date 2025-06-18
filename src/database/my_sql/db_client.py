@@ -15,7 +15,7 @@ class MySqlDbClient:
 
     def execute(self, sql_request: str, params: tuple = None):
         try:
-            with self.connection.cursor() as cursor: 
+            with self.connection.cursor(pymysql.cursors.DictCursor) as cursor:
                 cursor.execute(sql_request, params)
                 self.connection.commit()
                 raw_data = cursor.fetchall()
