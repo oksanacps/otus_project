@@ -21,7 +21,6 @@ class TestDeletePet:
         assert response.status_code == 204
         assert helpers.get_pet_in_db(db_client, owner_id) is None
 
-    @pytest.mark.test
     @allure.title("Удаление питомцев с привязанными визитами")
     def test_delete_pet_with_visits(
         self,

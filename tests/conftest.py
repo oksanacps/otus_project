@@ -24,6 +24,15 @@ def pytest_addoption(parser):
     parser.addoption("--db-user", action="store", default="petclinic")
     parser.addoption("--db-password", action="store", default="petclinic")
     parser.addoption("--db-name", action="store", default="petclinic")
+    parser.addoption(
+        "--browser",
+        default="chrome",
+        help="Options: firefox, chrome. Default: chrome",
+        choices=("chrome", "firefox"),
+    )
+    parser.addoption("--base_url", help="base_url", default="http://192.168.0.104:4200/")
+    parser.addoption("--exe_host", help="executor_host", default="localhost")
+    parser.addoption("--vnc", help="vnc", action='store_true', default=False)
 
 
 @pytest.fixture(scope="session")
