@@ -8,6 +8,7 @@ from helpers import helpers
 class TestDeleteOwner:
     """ """
 
+    @pytest.mark.nondestructive
     @allure.title("Удаление владельца питомцев по id без привязанных питомцев")
     def test_delete_owner_by_id(
         self, get_request_instance, create_owner, cleanup_owner, db_client
@@ -21,6 +22,7 @@ class TestDeleteOwner:
         assert response.status_code == 204
         assert helpers.get_owner_in_db(db_client, owner_id) is None
 
+    @pytest.mark.nondestructive
     @allure.title("Удаление владельца с привязанными питомцами")
     def test_delete_owner_with_pets(
         self, get_request_instance, create_owner_with_pets, cleanup_owner, db_client

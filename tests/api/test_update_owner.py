@@ -9,6 +9,7 @@ from helpers import helpers
 class TestUpdateOwner:
     """ """
 
+    @pytest.mark.nondestructive
     @allure.title("Обновление инфомрации владельца питомцев без привязанных питомцев")
     def test_update_owner_by_id(
         self,
@@ -33,6 +34,7 @@ class TestUpdateOwner:
             owner_id, new_owner_data, json.loads(owner_data_for_update)
         )
 
+    @pytest.mark.nondestructive
     @allure.title("Обновление инфомрации владельца питомцев с привязанными питомцами")
     def test_update_owner_with_pets(
         self,

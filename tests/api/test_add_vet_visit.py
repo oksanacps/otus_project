@@ -8,6 +8,7 @@ import allure
 class TestAddVetVisit:
     """ """
 
+    @pytest.mark.nondestructive
     @allure.title("Добавление визита в клинику")
     def test_visit_to_owner_pet(
         self, get_request_instance, create_owner_with_pets, cleanup_owner, db_client

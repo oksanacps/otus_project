@@ -24,6 +24,15 @@ def pytest_addoption(parser):
     parser.addoption("--db-user", action="store", default="petclinic")
     parser.addoption("--db-password", action="store", default="petclinic")
     parser.addoption("--db-name", action="store", default="petclinic")
+    parser.addoption(
+        "--browser",
+        default="chrome",
+        help="Options: firefox, chrome. Default: chrome",
+        choices=("chrome", "firefox"),
+    )
+    parser.addoption("--base_url", help="base_url", default="http://192.168.0.104:4200/")
+    parser.addoption("--exe_host", help="executor_host", default="localhost")
+    parser.addoption("--vnc", help="vnc", action='store_true', default=False)
 
 
 @pytest.fixture(scope="session")
@@ -80,15 +89,15 @@ def create_owner_with_pets(get_request_instance, db_client, generate_owner_data,
 def create_owner_with_pets_visit(get_request_instance, db_client, generate_owner_data, create_owner_with_pets):
     request = get_request_instance
     pet_id, owner_id, owner_data, data_new_pet = create_owner_with_pets
-    body = {
+    visit_data = {
         "date": "2013-01-01",
         "description": "rabies shot"
     }
-    response = request.post(endpoint=f'api/owners/{owner_id}/pets/{pet_id}/visits', body=json.dumps(body))
+    response = request.post(endpoint=f'api/owners/{owner_id}/pets/{pet_id}/visits', body=json.dumps(visit_data))
 
     assert response.get('petId') == pet_id
 
-    return pet_id, owner_id
+    return pet_id, owner_id, owner_data, data_new_pet, visit_data
 
 
 @pytest.fixture()

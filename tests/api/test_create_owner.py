@@ -9,6 +9,7 @@ from helpers import helpers
 class TestCreateOwner:
     """ """
 
+    @pytest.mark.nondestructive
     @allure.title("Создание владельца питомцев")
     @pytest.mark.smoke
     def test_create_owner(
@@ -23,6 +24,7 @@ class TestCreateOwner:
 
         assert helpers.validate_owner_data(owner_id, response, generate_owner_data)
 
+    @pytest.mark.nondestructive
     @allure.title("Создание владельца без обязательных параметров в теле запроса")
     @pytest.mark.regress
     @pytest.mark.parametrize("field", ["firstName", "lastName", "telephone"])
@@ -45,6 +47,7 @@ class TestCreateOwner:
 
         assert response.status_code == 400
 
+    @pytest.mark.nondestructive
     @allure.title(
         "Проверка ошибки при превышении максимальной длины полей в запросе создания владельца"
     )
