@@ -1,7 +1,6 @@
 import allure
 
 from page_objects.base_page import BasePage
-from page_objects import page_element
 from selenium.webdriver.common.by import By
 
 
@@ -20,7 +19,7 @@ class HomePage(BasePage):
 
     @allure.step("Nav_bar отображается")
     def nav_bar_is_visible(self):
-        return self.is_visible(page_element.Header.NAV_BAR)
+        return self.is_visible((By.CSS_SELECTOR, '[class="navbar navbar-default"]'))
 
     @allure.step("Pets.png отображается")
     def pets_png_is_visible(self):

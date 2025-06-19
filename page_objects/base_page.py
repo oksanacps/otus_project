@@ -60,23 +60,28 @@ class BasePage:
 
     def click(self, locator):
         self.logger.info(f"Click {locator}")
-        element = self.find_element(*locator)
+        element = self.driver.find_element(*locator)
         element.click()
 
     def send_keys(self, keys, locator):
         self.logger.info(f"Send keys to {locator}")
-        element = self.find_element(*locator)
+        element = self.driver.find_element(*locator)
         element.send_keys(keys)
+
+    def clear(self, locator):
+        self.logger.info(f"Clear {locator}")
+        element = self.driver.find_element(*locator)
+        element.clear()
 
     def get_text(self, locator):
         self.logger.info(f"Send keys to {locator}")
-        element = self.find_element(*locator)
+        element = self.driver.find_element(*locator)
         return element.text()
 
     def is_visible(self, locator):
         try:
             self.logger.info(f"Check that {locator} is visible")
-            return WebDriverWait(self.driver, 5).until(
+            return WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located(locator)
             )
         except selenium.common.exceptions.TimeoutException:
@@ -85,7 +90,7 @@ class BasePage:
     def is_presence(self, locator):
         try:
             self.logger.info(f"Check that {locator} is present")
-            return WebDriverWait(self.driver, 5).until(
+            return WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(locator)
             )
         except selenium.common.exceptions.TimeoutException:
@@ -93,12 +98,14 @@ class BasePage:
 
     def find_element(self, by, value):
         try:
+            self.logger.info(f"Find element {by} and {value}")
             return self.driver.find_element(by, value)
         except NoSuchElementException as e:
             raise AssertionError(e.msg)
 
     def find_elements(self, by, value):
         try:
+            self.logger.info(f"Find elements {by} and {value}")
             return self.driver.find_elements(by, value)
         except NoSuchElementException as e:
             raise AssertionError(e.msg)

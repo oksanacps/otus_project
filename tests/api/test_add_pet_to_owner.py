@@ -10,6 +10,7 @@ from helpers import helpers
 class TestAddPetToOwner:
     """ """
 
+    @pytest.mark.nondestructive
     @allure.title("Добавление питомца владельцу")
     def test_add_pet_to_owner(
         self,

@@ -8,6 +8,7 @@ from helpers import helpers
 class TestGetPet:
     """ """
 
+    @pytest.mark.nondestructive
     @allure.title("Получение списка питомцев")
     def test_get_pet_owners(
         self, get_request_instance, create_owner_with_pets, cleanup_owner
@@ -20,6 +21,7 @@ class TestGetPet:
 
         assert helpers.validate_pet_data(pet_id, response, data_new_pet)
 
+    @pytest.mark.nondestructive
     @allure.title("Получение питомца по id")
     def test_get_pet_owner_by_id(
         self, get_request_instance, create_owner_with_pets, cleanup_owner
