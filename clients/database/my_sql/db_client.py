@@ -15,14 +15,23 @@ class MySqlDbClient:
                 cursor.execute(sql_request, params)
                 self.connection.commit()
                 raw_data = cursor.fetchall()
-                db_event_log(host_info=self.connection.get_host_info(), sql_request=sql_request, params=params, raw_data=raw_data)
+                db_event_log(
+                    host_info=self.connection.get_host_info(),
+                    sql_request=sql_request,
+                    params=params,
+                    raw_data=raw_data,
+                )
 
             return raw_data
 
         except Exception as e:
             self.connection.rollback()
-            db_event_log(host_info=self.connection.get_host_info(), sql_request=sql_request, params=params,
-                         raw_data=str(raw_data))
+            db_event_log(
+                host_info=self.connection.get_host_info(),
+                sql_request=sql_request,
+                params=params,
+                raw_data=str(raw_data),
+            )
 
             raise AssertionError(f"Ошибка выполнения SQL запроса: {e}")
 

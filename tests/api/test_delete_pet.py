@@ -5,6 +5,7 @@ from helpers import helpers
 
 
 @pytest.mark.smoke
+@pytest.mark.api
 class TestDeletePet:
     """ """
 
@@ -31,7 +32,9 @@ class TestDeletePet:
         cleanup_owner,
         db_client,
     ):
-        pet_id, owner_id, owner_data, data_new_pet, visit_data = create_owner_with_pets_visit
+        pet_id, owner_id, owner_data, data_new_pet, visit_data = (
+            create_owner_with_pets_visit
+        )
         request = get_request_instance
         response = request.delete(endpoint="api/pets", endpoint_id=pet_id)
 

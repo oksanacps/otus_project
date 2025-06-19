@@ -16,16 +16,16 @@ class EditOwnerPage(BasePage):
 
     @allure.step("Заполнение данных владельца")
     def set_owner_data(self, first_name, last_name, address, city, telephone):
-        self.clear((By.ID, 'firstName'))
-        self.send_keys(first_name, (By.ID, 'firstName'))
-        self.clear((By.ID, 'lastName'))
-        self.send_keys(last_name, (By.ID, 'lastName'))
-        self.clear((By.ID, 'address'))
-        self.send_keys(address, (By.ID, 'address'))
-        self.clear((By.ID, 'city'))
-        self.send_keys(city, (By.ID, 'city'))
+        self.clear((By.ID, "firstName"))
+        self.send_keys(first_name, (By.ID, "firstName"))
+        self.clear((By.ID, "lastName"))
+        self.send_keys(last_name, (By.ID, "lastName"))
+        self.clear((By.ID, "address"))
+        self.send_keys(address, (By.ID, "address"))
+        self.clear((By.ID, "city"))
+        self.send_keys(city, (By.ID, "city"))
         # self.clear((By.ID, 'telephone'))    # Специально для падения теста
-        self.send_keys(telephone, (By.ID, 'telephone'))
+        self.send_keys(telephone, (By.ID, "telephone"))
 
     @allure.step("Нажимаю на кнопку возврата на страницк информации о владельце")
     def click_back_button(self):

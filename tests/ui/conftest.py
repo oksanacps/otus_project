@@ -11,7 +11,7 @@ from page_objects.owner_list_page import OwnerListPage
 
 @pytest.fixture(scope="session")
 def base_url(request):
-    return request.config.getoption("--base_url")
+    return request.config.getoption("--front_base_url")
 
 
 @pytest.fixture()
@@ -32,7 +32,9 @@ def driver(request):
 
     options.set_capability("selenoid:options", selenoid_options)
 
-    browser = webdriver.Remote(command_executor=f"http://{exe_host}:4444/wd/hub", options=options)
+    browser = webdriver.Remote(
+        command_executor=f"http://{exe_host}:4444/wd/hub", options=options
+    )
 
     base_page = BasePage(browser)
 
@@ -40,7 +42,7 @@ def driver(request):
 
     yield browser
 
-    if hasattr(request.node, 'rep_call') and request.node.rep_call.failed:
+    if hasattr(request.node, "rep_call") and request.node.rep_call.failed:
         browser.base_page.save_debug_info_on_failure()
 
     browser.quit()
@@ -58,31 +60,38 @@ def pytest_runtest_makereport(item):
 @pytest.fixture()
 def open_owner_information_page_without_pet(driver, base_url, create_owner):
     owner_id, owner_data = create_owner
-    owner_name = owner_data.get('firstName') + ' ' + owner_data.get('lastName')
-    owner_last_name = owner_data.get('lastName')
+    owner_name = owner_data.get("firstName") + " " + owner_data.get("lastName")
+    owner_last_name = owner_data.get("lastName")
 
     open_owner_information_page(driver, base_url, owner_name, owner_last_name)
 
     yield owner_id, owner_data
 
 
-@allure.step("Открытие страницы информации по владельцу с питомцем, но без визита в клинику")
+@allure.step(
+    "Открытие страницы информации по владельцу с питомцем, но без визита в клинику"
+)
 @pytest.fixture()
 def open_owner_information_page_with_pet(driver, base_url, create_owner_with_pets):
     pet_id, owner_id, owner_data, data_new_pet = create_owner_with_pets
-    owner_full_name = owner_data.get('firstName') + ' ' + owner_data.get('lastName')
-    owner_last_name = owner_data.get('lastName')
+    owner_full_name = owner_data.get("firstName") + " " + owner_data.get("lastName")
+    owner_last_name = owner_data.get("lastName")
 
     open_owner_information_page(driver, base_url, owner_full_name, owner_last_name)
 
     yield owner_id, owner_data, data_new_pet
 
+
 @allure.step("Открытие страницы информации по владельцу с питомцем и визитом в клинику")
 @pytest.fixture()
-def open_owner_information_page_with_pet_and_visit(driver, base_url, create_owner_with_pets_visit):
-    pet_id, owner_id, owner_data, data_new_pet, visit_data = create_owner_with_pets_visit
-    owner_name = owner_data.get('firstName') + ' ' + owner_data.get('lastName')
-    owner_last_name = owner_data.get('lastName')
+def open_owner_information_page_with_pet_and_visit(
+    driver, base_url, create_owner_with_pets_visit
+):
+    pet_id, owner_id, owner_data, data_new_pet, visit_data = (
+        create_owner_with_pets_visit
+    )
+    owner_name = owner_data.get("firstName") + " " + owner_data.get("lastName")
+    owner_last_name = owner_data.get("lastName")
 
     open_owner_information_page(driver, base_url, owner_name, owner_last_name)
 

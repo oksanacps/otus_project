@@ -6,6 +6,7 @@ from helpers import helpers, schems
 
 
 @pytest.mark.smoke
+@pytest.mark.api
 class TestGetOwner:
     """ """
 

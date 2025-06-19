@@ -18,23 +18,19 @@ class BasePage:
         allure.attach(
             self.driver.get_screenshot_as_png(),
             name=name,
-            attachment_type=AttachmentType.PNG
+            attachment_type=AttachmentType.PNG,
         )
 
     def save_page_source(self, name: str = "page_source") -> None:
         """Сохраняет исходный код страницы в отчет"""
         allure.attach(
-            self.driver.page_source,
-            name=name,
-            attachment_type=AttachmentType.HTML
+            self.driver.page_source, name=name, attachment_type=AttachmentType.HTML
         )
 
     def save_current_url(self, name: str = "current_url") -> None:
         """Сохраняет текущий URL в отчет"""
         allure.attach(
-            self.driver.current_url,
-            name=name,
-            attachment_type=AttachmentType.TEXT
+            self.driver.current_url, name=name, attachment_type=AttachmentType.TEXT
         )
 
     def save_debug_info_on_failure(self) -> None:
@@ -44,7 +40,7 @@ class BasePage:
         self.save_current_url()
 
     def open(self, base_url, path=""):
-        logger_events.log_ui_event(f'{base_url + path}')
+        logger_events.log_ui_event(f"{base_url + path}")
         self.driver.get(base_url + path)
 
     def click(self, locator):
@@ -107,4 +103,3 @@ class BasePage:
             return self.driver.find_elements(by, value)
         except NoSuchElementException as e:
             raise AssertionError(e.msg)
-

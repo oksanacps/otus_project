@@ -6,6 +6,7 @@ from helpers import helpers
 
 
 @pytest.mark.smoke
+@pytest.mark.api
 class TestUpdateOwner:
     """ """
 
