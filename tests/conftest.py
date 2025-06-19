@@ -25,9 +25,10 @@ def pytest_addoption(parser):
         help="Options: firefox, chrome. Default: chrome",
         choices=("chrome", "firefox"),
     )
-    parser.addoption("--base_url", help="base_url", default="http://192.168.0.104:4200/")
+    parser.addoption("--front_base_url", help="front_base_url", default="http://192.168.0.104:4200/")
     parser.addoption("--exe_host", help="executor_host", default="localhost")
     parser.addoption("--vnc", help="vnc", action='store_true', default=False)
+    parser.addoption("--back_base_url", help="front_base_url", default="http://localhost:9966/petclinic")
 
 
 @pytest.fixture(scope="session")
@@ -46,14 +47,14 @@ def db_client(request):
     db_client.close()
 
 
-@pytest.fixture(scope='module')
-@allure.step("Получение base_url, прокидывание заголовков")
-def get_request_instance():
+@pytest.fixture(scope='session')
+@allure.step("Получение backend_base_url, прокидывание заголовков")
+def get_request_instance(request):
     headers = {'Content-Type': 'application/json',
                'accept': 'application/json'}
-    request = BaseRequest(BASE_URL_PETCLINIC, headers)
+    base_url_petclinic_api = request.config.getoption("--back_base_url")
+    request = BaseRequest(base_url_petclinic_api, headers)
     return request
-
 
 @pytest.fixture()
 @allure.step("Создание владельца питомца")

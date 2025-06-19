@@ -11,7 +11,7 @@ from page_objects.owner_list_page import OwnerListPage
 
 @pytest.fixture(scope="session")
 def base_url(request):
-    return request.config.getoption("--base_url")
+    return request.config.getoption("--front_base_url")
 
 
 @pytest.fixture()
