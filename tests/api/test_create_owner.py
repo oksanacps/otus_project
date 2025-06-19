@@ -6,6 +6,7 @@ import allure
 from helpers import helpers
 
 
+@pytest.mark.api
 class TestCreateOwner:
     """ """
 

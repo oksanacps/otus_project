@@ -10,7 +10,6 @@ from helpers import helpers
 from clients.database.my_sql.db_client import MySqlDbClient
 from db_steps import db_steps
 from clients.http_client.base_request import BaseRequest
-from test_data.url_data import BASE_URL_PETCLINIC
 
 
 def pytest_addoption(parser):
@@ -25,10 +24,16 @@ def pytest_addoption(parser):
         help="Options: firefox, chrome. Default: chrome",
         choices=("chrome", "firefox"),
     )
-    parser.addoption("--front_base_url", help="front_base_url", default="http://192.168.0.104:4200/")
+    parser.addoption(
+        "--front_base_url", help="front_base_url", default="http://192.168.0.104:4200/"
+    )
     parser.addoption("--exe_host", help="executor_host", default="localhost")
-    parser.addoption("--vnc", help="vnc", action='store_true', default=False)
-    parser.addoption("--back_base_url", help="front_base_url", default="http://localhost:9966/petclinic")
+    parser.addoption("--vnc", help="vnc", action="store_true", default=False)
+    parser.addoption(
+        "--back_base_url",
+        help="front_base_url",
+        default="http://localhost:9966/petclinic",
+    )
 
 
 @pytest.fixture(scope="session")
@@ -47,14 +52,14 @@ def db_client(request):
     db_client.close()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 @allure.step("Получение backend_base_url, прокидывание заголовков")
 def get_request_instance(request):
-    headers = {'Content-Type': 'application/json',
-               'accept': 'application/json'}
+    headers = {"Content-Type": "application/json", "accept": "application/json"}
     base_url_petclinic_api = request.config.getoption("--back_base_url")
     request = BaseRequest(base_url_petclinic_api, headers)
     return request
+
 
 @pytest.fixture()
 @allure.step("Создание владельца питомца")
@@ -67,31 +72,41 @@ def create_owner(db_client, generate_owner_data):
 
 @pytest.fixture()
 @allure.step("Создание владельца с питомцем")
-def create_owner_with_pets(get_request_instance, db_client, generate_owner_data, create_owner, generate_pet_data):
+def create_owner_with_pets(
+    get_request_instance,
+    db_client,
+    generate_owner_data,
+    create_owner,
+    generate_pet_data,
+):
     request = get_request_instance
     owner_id, owner_data = create_owner
     data_new_pet = generate_pet_data
-    response = request.post(endpoint=f'api/owners/{owner_id}/pets', body=json.dumps(data_new_pet))
-    pet_id = response.get('id')
+    response = request.post(
+        endpoint=f"api/owners/{owner_id}/pets", body=json.dumps(data_new_pet)
+    )
+    pet_id = response.get("id")
     pet_data = helpers.get_pet_in_db(db_client, pet_id)
 
-    assert pet_data.get('owner_id') == owner_id
+    assert pet_data.get("owner_id") == owner_id
 
     return pet_id, owner_id, owner_data, data_new_pet
 
 
 @pytest.fixture()
 @allure.step("Создание владельца с питомцем и визитом в клинику")
-def create_owner_with_pets_visit(get_request_instance, db_client, generate_owner_data, create_owner_with_pets):
+def create_owner_with_pets_visit(
+    get_request_instance, db_client, generate_owner_data, create_owner_with_pets
+):
     request = get_request_instance
     pet_id, owner_id, owner_data, data_new_pet = create_owner_with_pets
-    visit_data = {
-        "date": "2013-01-01",
-        "description": "rabies shot"
-    }
-    response = request.post(endpoint=f'api/owners/{owner_id}/pets/{pet_id}/visits', body=json.dumps(visit_data))
+    visit_data = {"date": "2013-01-01", "description": "rabies shot"}
+    response = request.post(
+        endpoint=f"api/owners/{owner_id}/pets/{pet_id}/visits",
+        body=json.dumps(visit_data),
+    )
 
-    assert response.get('petId') == pet_id
+    assert response.get("petId") == pet_id
 
     return pet_id, owner_id, owner_data, data_new_pet, visit_data
 
@@ -108,7 +123,7 @@ def cleanup_owner(request, db_client):
         for owner_id in owner_to_cleanup:
             pets = db_steps.get_all_pets_by_owner_id(db_client, owner_id)
             for pet in pets:
-                db_steps.delete_all_visits_by_pet_id(db_client, pet.get('id'))
+                db_steps.delete_all_visits_by_pet_id(db_client, pet.get("id"))
             db_steps.delete_all_pets_by_owner_id(db_client, owner_id)
             db_steps.delete_owner(db_client, owner_id)
 
@@ -147,7 +162,7 @@ def generate_owner_data():
         "lastName": lastname,
         "address": address,
         "city": city,
-        "telephone": telephone
+        "telephone": telephone,
     }
     return owner_data
 
@@ -166,7 +181,7 @@ def generate_pet_data(db_client):
     fake = Faker()
 
     name = fake.first_name()[:30]
-    birthDate = fake.date_of_birth().strftime('%Y-%m-%d')
+    birthDate = fake.date_of_birth().strftime("%Y-%m-%d")
 
     pet_types = db_steps.get_pet_types(db_client)
     random_type = random.choice(pet_types)
@@ -174,10 +189,6 @@ def generate_pet_data(db_client):
     pet_data = {
         "name": name,
         "birthDate": birthDate,
-        "type": {
-            "name": random_type.get('name'),
-            "id": random_type.get('id')
-        }
+        "type": {"name": random_type.get("name"), "id": random_type.get("id")},
     }
     return pet_data
-

@@ -5,6 +5,7 @@ from page_objects.home_page import HomePage
 
 
 @pytest.mark.smoke
+@pytest.mark.ui
 class TestOpenHomePage:
     """ """
 

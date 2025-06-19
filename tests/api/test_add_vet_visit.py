@@ -5,6 +5,7 @@ import allure
 
 
 @pytest.mark.smoke
+@pytest.mark.api
 class TestAddVetVisit:
     """ """
 

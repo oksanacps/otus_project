@@ -22,19 +22,19 @@ class OwnerInformationPage(BasePage):
     @allure.step("Получение информации о владельце")
     def get_owner_information(self):
         self.is_visible((By.XPATH, '//h2[contains(text(), "Owner Information")]'))
-        tables = self.find_elements(By.CSS_SELECTOR, 'div .table.table-striped')
+        tables = self.find_elements(By.CSS_SELECTOR, "div .table.table-striped")
         owner_information_table = tables[0]
         return owner_information_table.text
 
     @allure.step("Получение информации о питомцах")
     def get_pet_information(self):
-        tables = self.find_elements(By.CSS_SELECTOR, 'div .table.table-striped')
+        tables = self.find_elements(By.CSS_SELECTOR, "div .table.table-striped")
         pet_information_table = tables[1]
         return pet_information_table.text
 
     @allure.step("Таблица с питомцами отображается")
     def pet_table_is_visible(self):
-        tables = self.find_elements(By.CSS_SELECTOR, 'div .table.table-striped')
+        tables = self.find_elements(By.CSS_SELECTOR, "div .table.table-striped")
         pet_information_table = tables[1]
         return len(pet_information_table.text) > 0
 
@@ -49,8 +49,6 @@ class OwnerInformationPage(BasePage):
 
     @allure.step("Получение информации и визитах в клинику")
     def get_visit_information(self):
-        tables = self.find_elements(By.CSS_SELECTOR, 'div .table.table-striped')
+        tables = self.find_elements(By.CSS_SELECTOR, "div .table.table-striped")
         visit_information_table = tables[1]
         return visit_information_table.text
-
-

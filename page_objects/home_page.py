@@ -11,7 +11,7 @@ class HomePage(BasePage):
 
     @allure.step("Welcome to Petclinic текст отображается")
     def welcome_to_petclinic_text_is_visible(self):
-        return self.is_visible((By.CSS_SELECTOR, 'h1.title'))
+        return self.is_visible((By.CSS_SELECTOR, "h1.title"))
 
     @allure.step("Welcome текст отображается")
     def welcome_text_is_visible(self):
