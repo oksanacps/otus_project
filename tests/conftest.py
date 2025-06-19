@@ -2,7 +2,6 @@ import json
 import random
 import re
 import pytest
-import logging
 import allure
 
 from faker import Faker
@@ -12,10 +11,6 @@ from clients.database.my_sql.db_client import MySqlDbClient
 from db_steps import db_steps
 from clients.http_client.base_request import BaseRequest
 from test_data.url_data import BASE_URL_PETCLINIC
-
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
 
 
 def pytest_addoption(parser):

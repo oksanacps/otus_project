@@ -1,6 +1,6 @@
 import pymysql
-import logging
 import pymysql.cursors
+from logger.logger_events import db_event_log
 
 
 class MySqlDbClient:
@@ -15,18 +15,16 @@ class MySqlDbClient:
                 cursor.execute(sql_request, params)
                 self.connection.commit()
                 raw_data = cursor.fetchall()
-                logging.info(f"--------------------------------")
-                logging.info(self.connection.get_host_info())
-            logging.info(f"Executed SQL request: {sql_request}")
-            logging.info(f"Parameters: {params}")
-            logging.info(f"Raw data: {raw_data}")
-            logging.info(f"--------------------------------")
+                db_event_log(host_info=self.connection.get_host_info(), sql_request=sql_request, params=params, raw_data=raw_data)
+
             return raw_data
+
         except Exception as e:
-            logging.error(f"Error executing SQL request: {e}")
             self.connection.rollback()
+            db_event_log(host_info=self.connection.get_host_info(), sql_request=sql_request, params=params,
+                         raw_data=str(raw_data))
+
             raise AssertionError(f"Ошибка выполнения SQL запроса: {e}")
 
     def close(self):
-        logging.info("Closing DB connection...")
         self.connection.close()

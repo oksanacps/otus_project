@@ -1,4 +1,5 @@
 import requests
+from logger import logger_events
 
 
 class BaseRequest:
@@ -18,15 +19,6 @@ class BaseRequest:
         else:
             response = requests.delete(url, headers=self.headers)
 
-        # log part
-        print("*************")
-        print(f"{request_type}")
-        print(response.url)
-        print(response.status_code)
-        print(response.reason)
-        print(response.text)
-        # print(response.json())
-        print("*************")
         return response
 
     def get(self, endpoint=None, endpoint_id=None, params=None):
@@ -37,6 +29,7 @@ class BaseRequest:
         elif endpoint is not None and endpoint_id is not None:
             url = f"{self.base_url}/{endpoint}/{endpoint_id}"
         response = self._request(url=url, request_type="GET", params=params)
+        logger_events.http_event_log(response=response)
         assert response.status_code == 200
         return response.json()
 
@@ -46,6 +39,7 @@ class BaseRequest:
         else:
             url = f"{self.base_url}/{endpoint}/{endpoint_id}"
         response = self._request(url, "POST", data=body)
+        logger_events.http_event_log(response=response)
         if response.status_code == 200 or response.status_code == 201:
             return response.json()
         return response
@@ -56,6 +50,7 @@ class BaseRequest:
         else:
             url = f"{self.base_url}/{endpoint}/{endpoint_id}"
         response = self._request(url, "DELETE")
+        logger_events.http_event_log(response=response)
         return response
 
     def put(self, endpoint, body, endpoint_id=None):
@@ -64,4 +59,5 @@ class BaseRequest:
         else:
             url = f"{self.base_url}/{endpoint}/{endpoint_id}"
         response = self._request(url, "PUT", data=body)
+        logger_events.http_event_log(response=response)
         return response
