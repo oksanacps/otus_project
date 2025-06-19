@@ -1,4 +1,5 @@
 import pytest
+import allure
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -33,15 +34,12 @@ def driver(request):
 
     browser = webdriver.Remote(command_executor=f"http://{exe_host}:4444/wd/hub", options=options)
 
-    # Инициализируем базовую страницу
     base_page = BasePage(browser)
 
-    # Сохраняем base_page в browser для легкого доступа из тестов
     browser.base_page = base_page
 
     yield browser
 
-    # Этот код выполнится после завершения теста
     if hasattr(request.node, 'rep_call') and request.node.rep_call.failed:
         browser.base_page.save_debug_info_on_failure()
 
@@ -49,15 +47,14 @@ def driver(request):
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    # Эта функция помогает определить статус теста (упал/не упал)
+def pytest_runtest_makereport(item):
     outcome = yield
     rep = outcome.get_result()
 
-    # Устанавливаем атрибут отчета для каждого из этапов теста
     setattr(item, "rep_" + rep.when, rep)
 
 
+@allure.step("Открытие страницы информации по владельцу без питомцев")
 @pytest.fixture()
 def open_owner_information_page_without_pet(driver, base_url, create_owner):
     owner_id, owner_data = create_owner
@@ -69,6 +66,7 @@ def open_owner_information_page_without_pet(driver, base_url, create_owner):
     yield owner_id, owner_data
 
 
+@allure.step("Открытие страницы информации по владельцу с питомцем, но без визита в клинику")
 @pytest.fixture()
 def open_owner_information_page_with_pet(driver, base_url, create_owner_with_pets):
     pet_id, owner_id, owner_data, data_new_pet = create_owner_with_pets
@@ -79,7 +77,7 @@ def open_owner_information_page_with_pet(driver, base_url, create_owner_with_pet
 
     yield owner_id, owner_data, data_new_pet
 
-
+@allure.step("Открытие страницы информации по владельцу с питомцем и визитом в клинику")
 @pytest.fixture()
 def open_owner_information_page_with_pet_and_visit(driver, base_url, create_owner_with_pets_visit):
     pet_id, owner_id, owner_data, data_new_pet, visit_data = create_owner_with_pets_visit

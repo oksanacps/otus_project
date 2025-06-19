@@ -96,6 +96,15 @@ class BasePage:
         except selenium.common.exceptions.TimeoutException:
             raise AssertionError
 
+    def is_clickable(self, locator):
+        try:
+            self.logger.info(f"Check that {locator} is clickable")
+            return WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(locator)
+            )
+        except selenium.common.exceptions.TimeoutException:
+            raise AssertionError
+
     def find_element(self, by, value):
         try:
             self.logger.info(f"Find element {by} and {value}")
@@ -109,3 +118,4 @@ class BasePage:
             return self.driver.find_elements(by, value)
         except NoSuchElementException as e:
             raise AssertionError(e.msg)
+
