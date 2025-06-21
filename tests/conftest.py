@@ -13,7 +13,6 @@ from clients.http_client.base_request import BaseRequest
 
 
 def pytest_addoption(parser):
-    parser.addoption("--db-host", action="store", default="localhost")
     parser.addoption("--db-port", action="store", default=3306)
     parser.addoption("--db-user", action="store", default="petclinic")
     parser.addoption("--db-password", action="store", default="petclinic")
@@ -24,22 +23,16 @@ def pytest_addoption(parser):
         help="Options: firefox, chrome. Default: chrome",
         choices=("chrome", "firefox"),
     )
-    parser.addoption(
-        "--front_base_url", help="front_base_url", default="http://192.168.0.104:4200/"
-    )
-    parser.addoption("--exe_host", help="executor_host", default="localhost")
+    parser.addoption("--host", help="host", default="192.168.0.101")
     parser.addoption("--vnc", help="vnc", action="store_true", default=False)
-    parser.addoption(
-        "--back_base_url",
-        help="front_base_url",
-        default="http://localhost:9966/petclinic",
-    )
+    parser.addoption("--front_port", help="front_port", default="4200")
+    parser.addoption("--back_port", help="back_port", default="9966")
 
 
 @pytest.fixture(scope="session")
 def db_client(request):
     db_client = MySqlDbClient(
-        host=request.config.getoption("--db-host"),
+        host=request.config.getoption("--host"),
         port=request.config.getoption("--db-port"),
         user=request.config.getoption("--db-user"),
         password=request.config.getoption("--db-password"),
@@ -56,7 +49,7 @@ def db_client(request):
 @allure.step("Получение backend_base_url, прокидывание заголовков")
 def get_request_instance(request):
     headers = {"Content-Type": "application/json", "accept": "application/json"}
-    base_url_petclinic_api = request.config.getoption("--back_base_url")
+    base_url_petclinic_api = f'http://{request.config.getoption("--host")}:{request.config.getoption("--back_port")}/petclinic'
     request = BaseRequest(base_url_petclinic_api, headers)
     return request
 
@@ -83,7 +76,9 @@ def create_owner_with_pets(
     owner_id, owner_data = create_owner
     data_new_pet = generate_pet_data
     response = request.post(
-        endpoint=f"api/owners/{owner_id}/pets", body=json.dumps(data_new_pet)
+        endpoint=f"api/owners/{owner_id}/pets",
+        body=json.dumps(data_new_pet),
+        expected_status=201,
     )
     pet_id = response.get("id")
     pet_data = helpers.get_pet_in_db(db_client, pet_id)
@@ -104,6 +99,7 @@ def create_owner_with_pets_visit(
     response = request.post(
         endpoint=f"api/owners/{owner_id}/pets/{pet_id}/visits",
         body=json.dumps(visit_data),
+        expected_status=201,
     )
 
     assert response.get("petId") == pet_id

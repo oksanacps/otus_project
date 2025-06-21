@@ -11,13 +11,13 @@ from page_objects.owner_list_page import OwnerListPage
 
 @pytest.fixture(scope="session")
 def base_url(request):
-    return request.config.getoption("--front_base_url")
+    return f'http://{request.config.getoption("--host")}:{request.config.getoption("--front_port")}/'
 
 
 @pytest.fixture()
 def driver(request):
     browser_name = request.config.getoption("--browser")
-    exe_host = request.config.getoption("--exe_host")
+    exe_host = request.config.getoption("--host")
     vnc = request.config.getoption("--vnc")
 
     if browser_name == "chrome":

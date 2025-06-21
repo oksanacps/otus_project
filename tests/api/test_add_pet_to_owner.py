@@ -25,7 +25,9 @@ class TestAddPetToOwner:
         request = get_request_instance
         data_new_pet = generate_pet_data
         response = request.post(
-            endpoint=f"api/owners/{owner_id}/pets", body=json.dumps(data_new_pet)
+            endpoint=f"api/owners/{owner_id}/pets",
+            body=json.dumps(data_new_pet),
+            expected_status=201,
         )
         pet_id = response.get("id")
         pet_data = helpers.get_pet_in_db(db_client, pet_id)

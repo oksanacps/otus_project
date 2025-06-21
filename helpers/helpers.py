@@ -12,9 +12,7 @@ def validate_owner_data(owner_id, response, expected_data):
     """
 
     if type(response) is list:
-        owner_in_response = next(
-            (owner for owner in response if owner["id"] == owner_id), None
-        )
+        owner_in_response = find_by_id(response, owner_id)
 
         if not owner_in_response:
             return False
@@ -38,8 +36,8 @@ def validate_pet_data(pet_id, response, expected_data):
     :return: True если данные соответствуют, False если нет
     """
 
-    if type(response) is list:
-        pet_in_response = next((pet for pet in response if pet["id"] == pet_id), None)
+    if isinstance(response, list):
+        pet_in_response = find_by_id(response, pet_id)
 
         if not pet_in_response:
             return False
@@ -71,3 +69,7 @@ def get_pet_in_db(db_client, pet_id):
     if result:
         return result[0]
     return None
+
+
+def find_by_id(items, item_id):
+    return next((item for item in items if item["id"] == item_id), None)

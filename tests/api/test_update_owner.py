@@ -23,14 +23,13 @@ class TestUpdateOwner:
         owner_id, owner_data = create_owner
         owner_data_for_update = json.dumps(generate_owner_data)
         request = get_request_instance
-        response = request.put(
+        request.put(
             endpoint="api/owners", body=owner_data_for_update, endpoint_id=owner_id
         )
         new_owner_data = helpers.get_owner_in_db(db_client, owner_id)
 
         cleanup_owner(owner_id)
 
-        assert response.status_code == 204
         assert helpers.validate_owner_data(
             owner_id, new_owner_data, json.loads(owner_data_for_update)
         )
@@ -48,14 +47,13 @@ class TestUpdateOwner:
         pet_id, owner_id, owner_data, data_new_pet = create_owner_with_pets
         owner_data_for_update = json.dumps(generate_owner_data)
         request = get_request_instance
-        response = request.put(
+        request.put(
             endpoint="api/owners", body=owner_data_for_update, endpoint_id=owner_id
         )
         new_owner_data = helpers.get_owner_in_db(db_client, owner_id)
 
         cleanup_owner(owner_id)
 
-        assert response.status_code == 204
         assert helpers.validate_owner_data(
             owner_id, new_owner_data, json.loads(owner_data_for_update)
         )

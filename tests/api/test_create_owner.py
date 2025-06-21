@@ -18,7 +18,9 @@ class TestCreateOwner:
     ):
         request = get_request_instance
         data_new_owner = json.dumps(generate_owner_data)
-        response = request.post(endpoint="api/owners", body=data_new_owner)
+        response = request.post(
+            endpoint="api/owners", body=data_new_owner, expected_status=201
+        )
         owner_id = response.get("id")
 
         cleanup_owner(owner_id)
@@ -28,25 +30,30 @@ class TestCreateOwner:
     @pytest.mark.nondestructive
     @allure.title("Создание владельца без обязательных параметров в теле запроса")
     @pytest.mark.regress
-    @pytest.mark.parametrize("field", ["firstName", "lastName", "telephone"])
+    @pytest.mark.parametrize(
+        "field, expected_status",
+        [("firstName", 400), ("lastName", 400), ("telephone", 400)],
+    )
     def test_create_owner_missing_required_field(
-        self, get_request_instance, generate_owner_data, field, cleanup_owner
+        self,
+        get_request_instance,
+        generate_owner_data,
+        field,
+        expected_status,
+        cleanup_owner,
     ):
         request = get_request_instance
         data_new_owner = generate_owner_data
         del data_new_owner[field]
-        response = request.post("api/owners", body=json.dumps(data_new_owner))
-
-        if response.status_code == 201:
-            owner_id = response.get("id")
-            if owner_id:
-                cleanup_owner(owner_id)
-                raise AssertionError(
-                    f"Владелец создался без обязательного поля '{field}'! "
-                    f"ID: {owner_id}, статус: {response.status_code}"
-                )
-
-        assert response.status_code == 400
+        response = request.post(
+            "api/owners",
+            body=json.dumps(data_new_owner),
+            expected_status=expected_status,
+        )
+        assert (
+            f"Field error in object 'ownerFieldsDto' on field '{field}'"
+            in response["detail"]
+        )
 
     @pytest.mark.nondestructive
     @allure.title(
@@ -79,16 +86,11 @@ class TestCreateOwner:
         data_new_owner = generate_owner_data
         data_new_owner[field] = value
         response = get_request_instance.post(
-            "api/owners", body=json.dumps(data_new_owner)
+            "api/owners",
+            body=json.dumps(data_new_owner),
+            expected_status=expected_status,
         )
-
-        if response.status_code == 201:
-            owner_id = response.get("id")
-            if owner_id:
-                cleanup_owner(owner_id)
-                raise AssertionError(
-                    f"Владелец создался c полем, превышающим максимальный порог'{field}'! "
-                    f"ID: {owner_id}, статус: {response.status_code}"
-                )
-
-        assert response.status_code == expected_status
+        assert (
+            f"Field error in object 'ownerFieldsDto' on field '{field}'"
+            in response["detail"]
+        )
