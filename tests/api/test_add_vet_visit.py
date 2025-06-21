@@ -20,6 +20,7 @@ class TestAddVetVisit:
         response = request.post(
             endpoint=f"api/owners/{owner_id}/pets/{pet_id}/visits",
             body=json.dumps(body),
+            expected_status=201,
         )
 
         cleanup_owner(owner_id)

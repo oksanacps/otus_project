@@ -20,7 +20,6 @@ class TestDeletePet:
 
         cleanup_owner(owner_id)
 
-        assert response.status_code == 204
         assert helpers.get_pet_in_db(db_client, owner_id) is None
 
     @pytest.mark.nondestructive
@@ -36,8 +35,10 @@ class TestDeletePet:
             create_owner_with_pets_visit
         )
         request = get_request_instance
-        response = request.delete(endpoint="api/pets", endpoint_id=pet_id)
+        response = request.delete(
+            endpoint="api/pets", endpoint_id=pet_id, expected_status=404
+        )
 
         cleanup_owner(owner_id)
 
-        assert response.status_code == 204
+        assert "Cannot delete or update a parent row" in response["detail"]

@@ -9,55 +9,50 @@ class BaseRequest:
 
     def _request(self, url, request_type, data=None, params=None):
         if request_type == "GET":
-            response = requests.get(url, params=params, headers=self.headers)
+            response = requests.get(url, params=params, headers=self.headers, timeout=5)
         elif request_type == "POST":
-            response = requests.post(url, data=data, headers=self.headers)
+            response = requests.post(url, data=data, headers=self.headers, timeout=5)
         elif request_type == "DELETE":
-            response = requests.delete(url, headers=self.headers)
+            response = requests.delete(url, headers=self.headers, timeout=5)
         elif request_type == "PUT":
-            response = requests.put(url, data=data, headers=self.headers)
+            response = requests.put(url, data=data, headers=self.headers, timeout=5)
         else:
-            response = requests.delete(url, headers=self.headers)
+            raise ValueError(f"Unsupported request type: {request_type}")
 
         return response
 
-    def get(self, endpoint=None, endpoint_id=None, params=None):
-        if endpoint is not None and endpoint_id is None:
-            url = f"{self.base_url}/{endpoint}"
-        elif endpoint is None and endpoint_id is None:
-            url = self.base_url
-        elif endpoint is not None and endpoint_id is not None:
-            url = f"{self.base_url}/{endpoint}/{endpoint_id}"
-        response = self._request(url=url, request_type="GET", params=params)
-        logger_events.http_event_log(response=response)
-        assert response.status_code == 200
-        return response.json()
+    def _build_url(self, endpoint=None, endpoint_id=None):
+        url = self.base_url
+        if endpoint:
+            url += f"/{endpoint}"
+        if endpoint_id:
+            url += f"/{endpoint_id}"
+        return url
 
-    def post(self, endpoint, body, endpoint_id=None):
-        if endpoint_id is None:
-            url = f"{self.base_url}/{endpoint}"
-        else:
-            url = f"{self.base_url}/{endpoint}/{endpoint_id}"
-        response = self._request(url, "POST", data=body)
+    def _process_response(self, response, expected_status=200):
         logger_events.http_event_log(response=response)
-        if response.status_code == 200 or response.status_code == 201:
+        assert response.status_code == expected_status
+        try:
             return response.json()
-        return response
+        except ValueError:
+            return response
 
-    def delete(self, endpoint, endpoint_id=None):
-        if endpoint_id is None:
-            url = f"{self.base_url}/{endpoint}"
-        else:
-            url = f"{self.base_url}/{endpoint}/{endpoint_id}"
+    def get(self, endpoint=None, endpoint_id=None, params=None, expected_status=200):
+        url = self._build_url(endpoint, endpoint_id)
+        response = self._request(url=url, request_type="GET", params=params)
+        return self._process_response(response, expected_status)
+
+    def post(self, endpoint, body, endpoint_id=None, expected_status=200):
+        url = self._build_url(endpoint, endpoint_id)
+        response = self._request(url, "POST", data=body)
+        return self._process_response(response, expected_status)
+
+    def delete(self, endpoint, endpoint_id=None, expected_status=204):
+        url = self._build_url(endpoint, endpoint_id)
         response = self._request(url, "DELETE")
-        logger_events.http_event_log(response=response)
-        return response
+        return self._process_response(response, expected_status)
 
-    def put(self, endpoint, body, endpoint_id=None):
-        if endpoint_id is None:
-            url = f"{self.base_url}/{endpoint}"
-        else:
-            url = f"{self.base_url}/{endpoint}/{endpoint_id}"
+    def put(self, endpoint, body, endpoint_id=None, expected_status=204):
+        url = self._build_url(endpoint, endpoint_id)
         response = self._request(url, "PUT", data=body)
-        logger_events.http_event_log(response=response)
-        return response
+        return self._process_response(response, expected_status)

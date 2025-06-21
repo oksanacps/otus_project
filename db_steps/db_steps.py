@@ -31,7 +31,7 @@ def create_owner(db_client: MySqlDbClient, owner_data: dict):
         return result[0].get("id")
 
     except Exception:
-        raise AssertionError(f"Ошибка создания владельца")
+        raise RuntimeError(f"Ошибка создания владельца")
 
 
 def delete_owner(db_client: MySqlDbClient, owner_id: int):
@@ -52,7 +52,7 @@ def delete_owner(db_client: MySqlDbClient, owner_id: int):
         return True
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка удаления владельца {owner_id}: {e}")
+        raise RuntimeError(f"Ошибка удаления владельца {owner_id}: {e}")
 
 
 def get_owner_by_id(db_client: MySqlDbClient, owner_id: int):
@@ -72,7 +72,7 @@ def get_owner_by_id(db_client: MySqlDbClient, owner_id: int):
         return result
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения владельца {owner_id}: {e}")
+        raise RuntimeError(f"Ошибка получения владельца {owner_id}: {e}")
 
 
 def get_pet_by_id(db_client: MySqlDbClient, pet_id: int):
@@ -92,7 +92,7 @@ def get_pet_by_id(db_client: MySqlDbClient, pet_id: int):
         return result
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения питомца {pet_id}: {e}")
+        raise RuntimeError(f"Ошибка получения питомца {pet_id}: {e}")
 
 
 def get_all_pets_by_owner_id(db_client: MySqlDbClient, owner_id: int):
@@ -112,7 +112,7 @@ def get_all_pets_by_owner_id(db_client: MySqlDbClient, owner_id: int):
         return result
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения питомцев по владельцу {owner_id}: {e}")
+        raise RuntimeError(f"Ошибка получения питомцев по владельцу {owner_id}: {e}")
 
 
 def delete_all_pets_by_owner_id(db_client: MySqlDbClient, owner_id: int):
@@ -132,7 +132,7 @@ def delete_all_pets_by_owner_id(db_client: MySqlDbClient, owner_id: int):
         return True
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения питомца {owner_id}: {e}")
+        raise RuntimeError(f"Ошибка получения питомца {owner_id}: {e}")
 
 
 def delete_all_visits_by_pet_id(db_client: MySqlDbClient, pet_id: int):
@@ -152,7 +152,7 @@ def delete_all_visits_by_pet_id(db_client: MySqlDbClient, pet_id: int):
         return True
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения визита {pet_id}: {e}")
+        raise RuntimeError(f"Ошибка получения визита {pet_id}: {e}")
 
 
 def get_pet_types(db_client: MySqlDbClient):
@@ -170,4 +170,4 @@ def get_pet_types(db_client: MySqlDbClient):
         return result
 
     except Exception as e:
-        raise ArithmeticError(f"Ошибка получения типов питомцев: {e}")
+        raise RuntimeError(f"Ошибка получения типов питомцев: {e}")
